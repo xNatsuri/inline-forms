@@ -34,6 +34,43 @@ func (l Label) submit(any) error {
 	return nil
 }
 
+// Header represents a static header on a form. It serves only to display a large box of text, and users cannot
+// submit values to it.
+type Header struct {
+	// Text is the text held by the header. The text may contain Minecraft formatting codes.
+	Text string
+}
+
+// MarshalJSON ...
+func (h Header) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"type": "header",
+		"text": h.Text,
+	})
+}
+
+// Submit ...
+func (h Header) submit(any) error {
+	return nil
+}
+
+// Divider represents a static divider on a form. It serves only to display a section divider, and users cannot
+// submit values to it.
+type Divider struct{}
+
+// MarshalJSON ...
+func (d Divider) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"type": "divider",
+		"text": "",
+	})
+}
+
+// Submit ...
+func (d Divider) submit(any) error {
+	return nil
+}
+
 // Input represents a text input box element. Submitters may write any text in these boxes with no specific
 // length.
 type Input struct {
