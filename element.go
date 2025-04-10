@@ -3,7 +3,6 @@ package form
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/df-mc/dragonfly/server/world"
 	"strings"
 	"unicode/utf8"
 )
@@ -12,6 +11,7 @@ import (
 // the element interface may be added to a form before it is sent to a player.
 type Element interface {
 	json.Marshaler
+	ReadOnly() bool
 	submit(value any) error
 }
 
@@ -30,8 +30,50 @@ func (l Label) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// ReadOnly ...
+func (Label) ReadOnly() bool {
+	return true
+}
+
 // Submit ...
 func (l Label) submit(any) error {
+	return nil
+}
+
+// Header represents a static header on a form. It serves only to display a large box of text, and users cannot
+// submit values to it.
+type Header struct {
+	// Text is the text held by the header. The text may contain Minecraft formatting codes.
+	Text string
+}
+
+// MarshalJSON ...
+func (h Header) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"type": "header",
+		"text": h.Text,
+	})
+}
+
+// Submit ...
+func (h Header) submit(any) error {
+	return nil
+}
+
+// Divider represents a static divider on a form. It serves only to display a section divider, and users cannot
+// submit values to it.
+type Divider struct{}
+
+// MarshalJSON ...
+func (d Divider) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{
+		"type": "divider",
+		"text": "",
+	})
+}
+
+// Submit ...
+func (d Divider) submit(any) error {
 	return nil
 }
 
@@ -59,6 +101,11 @@ func (i Input) MarshalJSON() ([]byte, error) {
 		"default":     i.Default,
 		"placeholder": i.Placeholder,
 	})
+}
+
+// ReadOnly ...
+func (Input) ReadOnly() bool {
+	return false
 }
 
 // Submit ...
@@ -96,6 +143,11 @@ func (t Toggle) MarshalJSON() ([]byte, error) {
 		"text":    t.Text,
 		"default": t.Default,
 	})
+}
+
+// ReadOnly ...
+func (Toggle) ReadOnly() bool {
+	return false
 }
 
 // Submit ...
@@ -141,6 +193,11 @@ func (s Slider) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// ReadOnly ...
+func (Slider) ReadOnly() bool {
+	return false
+}
+
 // Submit ...
 func (s Slider) submit(value any) error {
 	if s.Submit == nil {
@@ -183,6 +240,11 @@ func (d Dropdown) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// ReadOnly ...
+func (Dropdown) ReadOnly() bool {
+	return false
+}
+
 // Submit ...
 func (d Dropdown) submit(value any) error {
 	if d.Submit == nil {
@@ -214,6 +276,11 @@ func (s StepSlider) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// ReadOnly ...
+func (StepSlider) ReadOnly() bool {
+	return false
+}
+
 // Submit ...
 func (s StepSlider) submit(value any) error {
 	if s.Submit == nil {
@@ -242,7 +309,7 @@ type Button struct {
 	// 'textures/blocks/grass_carried'.
 	Image string
 	// Submit is called when a player clicks on the button in a form. This is always called before the Form's Submit.
-	Submit func(tx *world.Tx)
+	Submit func()
 }
 
 // MarshalJSON ...
