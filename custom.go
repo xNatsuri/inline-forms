@@ -41,8 +41,6 @@ func (form *Custom) SubmitJSON(data []byte, _ form.Submitter, tx *world.Tx) erro
 	var inputData []any
 	if err := dec.Decode(&inputData); err != nil {
 		return fmt.Errorf("error decoding JSON data to slice: %w", err)
-	} else if len(form.Elements) != len(inputData) {
-		return fmt.Errorf("form JSON data array does not have enough values")
 	}
 	for i, element := range form.Elements {
 		if element.ReadOnly() {

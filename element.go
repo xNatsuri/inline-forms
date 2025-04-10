@@ -3,6 +3,7 @@ package form
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/df-mc/dragonfly/server/world"
 	"strings"
 	"unicode/utf8"
 )
@@ -309,7 +310,7 @@ type Button struct {
 	// 'textures/blocks/grass_carried'.
 	Image string
 	// Submit is called when a player clicks on the button in a form. This is always called before the Form's Submit.
-	Submit func()
+	Submit func(tx *world.Tx)
 }
 
 // MarshalJSON ...
