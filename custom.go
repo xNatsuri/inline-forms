@@ -46,6 +46,9 @@ func (form *Custom) SubmitJSON(data []byte, _ form.Submitter, tx *world.Tx) erro
 		if element.ReadOnly() {
 			continue
 		}
+		if inputData[i] == nil {
+			return fmt.Errorf("form JSON data array does not have enough values")
+		}
 		err := element.submit(inputData[i])
 		if err != nil {
 			return fmt.Errorf("error parsing form response value: %w", err)
